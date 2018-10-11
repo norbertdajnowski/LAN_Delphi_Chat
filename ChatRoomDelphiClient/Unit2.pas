@@ -1,0 +1,112 @@
+unit Unit2;
+
+interface
+
+uses
+    Windows,DateUtils , Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, StrUtils, DB, ADODB, Grids, DBGrids, winsock;
+
+type
+  TForm2 = class(TForm)
+    Label1: TLabel;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Label2: TLabel;
+    Label3: TLabel;
+    Button1: TButton;
+    ADOQuery1: TADOQuery;
+    procedure Button1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+   Nickname : string;
+    { Public declarations }
+  end;
+
+var
+  Form2: TForm2;
+   myDate : TFormatSettings;
+  formattedDateTime ,StrStaffID, IPAddress  : string;
+
+implementation
+
+uses ChatClient;
+
+{$R *.dfm}
+
+
+function getIPs: Tstrings; 
+type 
+  TaPInAddr = array[0..10] of PInAddr; 
+  PaPInAddr = ^TaPInAddr; 
+var 
+  phe: PHostEnt; 
+  pptr: PaPInAddr; 
+  Buffer: array[0..63] of Char; 
+  I: Integer; 
+  GInitData: TWSAData; 
+begin 
+  WSAStartup($101, GInitData); 
+  Result := TstringList.Create; 
+  Result.Clear; 
+  GetHostName(Buffer, SizeOf(Buffer)); 
+  phe := GetHostByName(buffer); 
+  if phe = nil then Exit; 
+  pPtr := PaPInAddr(phe^.h_addr_list); 
+  I    := 0; 
+  while pPtr^[I] <> nil do 
+  begin
+    Result.Add(inet_ntoa(pptr^[I]^));
+    Inc(I); 
+  end;
+  WSACleanup;
+end;
+
+function RandomID(PLen: Integer): string;
+ var
+   str: string;
+   x : integer;
+
+begin
+   Randomize;
+   str    := '123456789';
+   Result := '';
+   repeat
+     Result := Result + str[Random(Length(str)) + 1];
+   until (Length(Result) = PLen)
+end;
+
+
+procedure TForm2.Button1Click(Sender: TObject);
+begin
+  MyDate.ShortTimeFormat := 'yyyy-mm-dd';
+  formattedDateTime := DateToStr((Today), MyDate);
+  ADOQuery1.Close;
+  ADOQuery1.SQL.Clear;
+  ADOQuery1.SQL.Add('select *from Users where Username=' +QuotedStr(Edit1.Text));
+  ADOQuery1.Open;
+  If (ADOQuery1.RecordCount = 0) then
+   ShowMessage('Username not found')
+  else begin
+  If (ADOQuery1.FieldByName('myPassword1').AsString = Edit2.Text) or (ADOQuery1.FieldByName('myPassword1').AsString = Edit2.Text) then begin
+   StrStaffID := ADOQuery1.FieldByName('UserID').AsString;
+   IPAddress := getIPs.Text;
+   Delete(IPAddress, 1, 15);
+   Repeat
+    Form2.Nickname := InputBox ('Nickname Set', 'Enter your nickname', '');
+   until (Form2.Nickname <> '');
+   ADOQuery1.SQL.Clear;
+   ADOQuery1.SQL.Add('Insert into LoginEvent(LogID,ComputerIP,User_ID,DateOfActive, TimeOfActive, Nickname) Values('+RandomID(8)+','+QuotedStr(IPAddress)+','+StrStaffID+','+QuotedStr(DateToStr(Date))+','+QuotedStr(TimeToStr(Now))+','+QuotedStr(Form2.Nickname)+')');
+   ADOQuery1.ExecSql;
+   Form2.Hide;
+   Form1.Show;
+   end
+    else
+     showmessage('password not found');
+   end;
+end;
+
+
+
+
+end.
