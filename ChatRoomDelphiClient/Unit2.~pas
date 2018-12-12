@@ -99,7 +99,7 @@ begin
   If (ADOQuery1.RecordCount = 0) then
    ShowMessage('Username not found')
   else begin
-  If (ADOQuery1.FieldByName('myPassword1').AsString = Edit2.Text) or (ADOQuery1.FieldByName('myPassword1').AsString = MD5(Edit2.Text)) then begin
+  If (ADOQuery1.FieldByName('myPassword').AsString = Edit2.Text) or (ADOQuery1.FieldByName('myPassword').AsString = MD5(Edit2.Text)) then begin
    StrStaffID := ADOQuery1.FieldByName('UserID').AsString;
    IPAddress := getIPs.Text;
    Delete(IPAddress, 1, 15);

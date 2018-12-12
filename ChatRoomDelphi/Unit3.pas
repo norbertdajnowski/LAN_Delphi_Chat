@@ -14,7 +14,6 @@ type
     Label3: TLabel;
     Edit2: TEdit;
     Button1: TButton;
-    ListBox1: TListBox;
     Button2: TButton;
     ADOQuery1: TADOQuery;
     CheckBox1: TCheckBox;
@@ -32,6 +31,8 @@ type
     { Public declarations }
   end;
 
+  Thash = cardinal;
+
 var
   Form3: TForm3;
   GUID1 : TGUID;
@@ -46,18 +47,36 @@ uses server;
 
 
 function RandomID(PLen: Integer): string;
+
  var
    str: string;
    x : integer;
 
 begin
-   Randomize;
+   Randomize;               //randomizes values in delphi
    str    := '123456789';
    Result := '';
    repeat
-     Result := Result + str[Random(Length(str)) + 1];
+     Result := Result + str[Random(Length(str)) + 1];    //adds on random digit until result is 8 digits long
    until (Length(Result) = PLen)
 end;
+
+function Hash(const aKey: string) : THash;
+ var
+   G : longint;
+   i : integer;
+   Hash : longint;
+ begin
+   Hash := 0;
+   for i := 1 to length(aKey) do begin
+     Hash := (Hash shl 4) + ord(aKey[i]);
+     G := Hash and $F0000000;
+     if (G <> 0) then
+       Hash := (Hash xor (G shr 24)) xor G;
+   end;
+   Result := Hash;
+ end;
+
 
 
 procedure TForm3.Button2Click(Sender: TObject);
@@ -68,28 +87,27 @@ procedure TForm3.Button2Click(Sender: TObject);
  end;
 
 
-procedure TForm3.Button1Click(Sender: TObject);
- var
-  Error : boolean ;
+procedure TForm3.Button1Click(Sender: TObject); //button to create a new account
 
   begin
-   Error := false;
    ADOQuery1.close;
    ADOQuery1.SQL.Clear;
-   ADOQuery1.SQL.Add ('Insert into Users(UserID,Username,myPassword) values('+RandomID(8)+','+QuotedStr(Edit1.Text)+','+QuotedStr(edit2.text)+')');   //Password gives error
-   try
-   ADOQuery1.execsql;
-    Except begin
-     MessageBox(self.Handle, 'Error registering, try again or press return', 'Error', MB_ICONSTOP);
-     Error := True;
-    end;
-   end;
-   If (Error = False) then
-    MessageBox(self.Handle, 'Your account has been created', 'Registered', $30);
+   ADOQuery1.SQL.Add ('select *from Users where username=' + QuotedStr(Edit1.Text));
+   ADOQuery1.open;                                                    //checks if an account like this already exists
+   If (ADOQuery1.RecordCount <> 0) then begin
+    sleep(1000);                                 //if it does then program freezes for one second
+    MessageBox(self.Handle, 'An account with the details entered already exists', 'Register Error', MB_ICONSTOP);
+   end
+   else
+   ADOQuery1.close;
+   ADOQuery1.SQL.Clear;
+   ADOQuery1.SQL.Add ('Insert into Users(UserID,Username,myPassword) values('+RandomID(8)+','+QuotedStr(Edit1.Text)+','+QuotedStr(IntToHex(Hash(edit2.text),8))+')');   //Password gives error
+   ADOQuery1.execsql;                    //else a new account is written into the database
+   MessageBox(self.Handle, 'Your account has been created', 'Registered', $30);
   end;
 
 
-procedure TForm3.OnChecked(Sender: TObject);
+procedure TForm3.OnChecked(Sender: TObject);   //checkbox password visibility procedure
 
  begin
   If (Edit2.PasswordChar = '*') then
@@ -98,15 +116,18 @@ procedure TForm3.OnChecked(Sender: TObject);
    Edit2.PasswordChar := '*';
  end;
 
-procedure TForm3.Button3Click(Sender: TObject);
+procedure TForm3.Button3Click(Sender: TObject);      //button to delete an account
+
  begin
   ADOQuery1.SQL.Text := 'SELECT * FROM Users WHERE Username = '+QuotedStr(Edit1.Text)+'';
-  ADOQuery1.Open;
-  if ADOQuery1.IsEmpty then
-   MessageBox(self.Handle, 'User not found', 'User Missing', MB_ICONSTOP)
+  ADOQuery1.Open;                              //checks if the account exists
+  if ADOQuery1.IsEmpty then begin
+   sleep(1000);
+   MessageBox(self.Handle, 'User not found', 'User Missing', MB_ICONSTOP);
+  end
   else
   begin
-   ADOQuery1.Close;
+   ADOQuery1.Close;                   //If exists then it is deleted from the database
    ADOQuery1.SQL.Text := 'DELETE FROM Users WHERE Username = '+QuotedStr(Edit1.Text)+'';
    ADOQuery1.ExecSQL;
    MessageBox(self.Handle,'Information was Deleted', 'Deleted' , $30);
@@ -114,17 +135,18 @@ procedure TForm3.Button3Click(Sender: TObject);
    ADOquery1.Free;
   end;
 
-procedure TForm3.Button4Click(Sender: TObject);
+procedure TForm3.Button4Click(Sender: TObject);        //button to delete all logon information
+
  var
   x : integer;
 
  begin
   Try
    ADOQuery1.Close;
-   ADOQuery1.SQL.Text := 'DELETE FROM LoginEvent WHERE User_ID <> 0';
+   ADOQuery1.SQL.Text := 'DELETE FROM LoginEvent WHERE User_ID <> 0'; // Deletes every record in the loginevent table
    ADOQuery1.ExecSQL;
   Except
-   MessageBox(self.Handle, 'Failed to delete logs', 'ERROR', MB_ICONSTOP);
+   MessageBox(self.Handle, 'Failed to delete logs', 'ERROR', MB_ICONSTOP);//On error, message is shown to the user
    x := 1;
   end;
   If (x<>1) then

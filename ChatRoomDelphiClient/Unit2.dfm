@@ -1,8 +1,8 @@
 object Form2: TForm2
   Left = 1000
   Top = 125
-  Width = 235
-  Height = 239
+  Width = 238
+  Height = 257
   Caption = 'Login'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -56,18 +56,18 @@ object Form2: TForm2
   end
   object Button1: TButton
     Left = 48
-    Top = 168
+    Top = 152
     Width = 129
-    Height = 17
+    Height = 25
     Caption = 'Login'
     TabOrder = 2
     OnClick = Button1Click
   end
   object ADOQuery1: TADOQuery
     ConnectionString = 
-      'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\Norbert\De' +
-      'sktop\A level proj sockets\ChatRoomDelphi\LoginData.mdb;Persist ' +
-      'Security Info=False'
+      'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\norbertoli' +
+      'ni\Desktop\A level proj sockets\ChatRoomDelphi\LoginData.mdb;Per' +
+      'sist Security Info=False'
     Parameters = <>
     Left = 192
     Top = 8

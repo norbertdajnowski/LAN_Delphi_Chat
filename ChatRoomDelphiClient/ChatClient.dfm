@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 825
-  Top = 288
+  Left = 1330
+  Top = 454
   Width = 408
   Height = 377
   Caption = 'Chat'
@@ -53,7 +53,7 @@ object Form1: TForm1
     Top = 72
     Width = 217
     Height = 25
-    Caption = 'Connect / disconnect'
+    Caption = 'Connect'
     TabOrder = 1
     OnClick = Button2Click
   end
@@ -77,6 +77,15 @@ object Form1: TForm1
     OnClick = OneClickedE
     OnKeyPress = OnEnterKey
   end
+  object Button3: TButton
+    Left = 128
+    Top = 312
+    Width = 145
+    Height = 17
+    Caption = 'Disconnect'
+    TabOrder = 4
+    OnClick = Button3Click
+  end
   object ClientSocket1: TClientSocket
     Active = False
     ClientType = ctNonBlocking
@@ -89,9 +98,9 @@ object Form1: TForm1
   end
   object ADOQuery1: TADOQuery
     ConnectionString = 
-      'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\Norbert\De' +
-      'sktop\A level proj sockets\ChatRoomDelphi\LoginData.mdb;Persist ' +
-      'Security Info=False'
+      'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\norbertoli' +
+      'ni\Desktop\A level proj sockets\ChatRoomDelphi\LoginData.mdb;Per' +
+      'sist Security Info=False'
     Parameters = <>
     Left = 40
     Top = 8

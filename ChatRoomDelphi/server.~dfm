@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 757
-  Top = 174
+  Left = 617
+  Top = 227
   Width = 460
   Height = 382
   Caption = 'Chat Group Server'

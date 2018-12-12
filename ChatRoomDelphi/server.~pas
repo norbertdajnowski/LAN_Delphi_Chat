@@ -46,8 +46,6 @@ type
 
 var
   Form1: TForm1;
-  ListOfUsers, TempList : array of string;
-  ALo, AMid , AHi, i: integer;
 
 implementation
 
@@ -243,71 +241,12 @@ begin
  end;
 end;
 
-procedure Merge(ALo,AMid,AHi:Integer);
-  var i,j,k,m:Integer;
-  begin
-    i:=0;
-    for j:=ALo to AMid do
-    begin
-      TempList[i]:=ListOfUsers[j];
-      inc(i);
-      //copy lower half or Vals into temporary array AVals
-    end;
 
-    i:=0;j:=AMid + 1;k:=ALo;//j could be undefined after the for loop!
-    while ((k < j) and (j <= AHi)) do
-    if (TempList[i] <= ListOfUsers[j]) then
-    begin
-      ListOfUsers[k]:=TempList[i];
-      inc(i);inc(k);
-    end else
-    begin
-      ListOfUsers[k]:=ListOfUsers[j];
-      inc(k);inc(j); 
-    end; 
-    {locate next greatest value in Vals or AVals and copy it to the 
-     right position.}
- 
-    for m:=k to j - 1 do 
-    begin 
-      ListOfUsers[m]:=TempList[i];
-      inc(i);
-    end; 
-    //copy back any remaining, unsorted, elements 
-  end;
-
-procedure PerformMergeSort(ALo,AHi:Integer);
-  var AMid:Integer; 
-  begin 
-    if (ALo < AHi) then 
-    begin 
-      AMid:=(ALo + AHi) shr 1;
-      PerformMergeSort(ALo,AMid);
-      PerformMergeSort(AMid + 1,AHi);
-      Merge(ALo,AMid,AHi);
-    end; 
-  end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   x := 0;
   ClientCounter := 1;
   SetLength (ClientList , ClientCounter);
-  ADOQuery1.Close;
- ADOQuery1.SQL.Clear;
- ADOQuery1.SQL.Text := ' SELECT * FROM LoginEvent ';
- ADOQuery1.Open;
- ADoQuery1.First;
- While not ADOQuery1.Eof do
-  begin
-   SetLength (ListOfUsers , i + 1);
-   If (ADOQuery1.FieldByName('Nickname').AsString <> '') then begin
-    ListOfUsers [i] := ADOQuery1.FieldByName('Nickname').AsString;
-    i := i + 1;
-   end;
-   ADOQuery1.Next;
-  end;
-  SetLength (TempList, i);
-  PerformMergeSort(Low(ListOfUsers), High(ListOfUsers));
 end;
 
 
@@ -364,47 +303,10 @@ begin
  MessageBox(self.Handle,'If chat existed then it has been deleted', 'Deleted' , $30);
 end;
 
-function search (NSearch : string; i : integer):boolean ;
-var
- low, high, mid : integer;
-begin
-  Search := false;
-  low := 2;
-  high := i;
-  while low <= high do begin
-   mid :=((high + low) div 2);
-   If ListOfUsers[Mid] = NSearch then
-    Result := True;
-   If (ListOfUsers[mid] < NSearch) then
-    Low := Mid + 1
-    else High := mid - 1;
-   end;
-end;
-
 procedure TForm1.Button6Click(Sender: TObject);
-
-var
-
-counter : integer;
-Nickname : string;
-
 begin
- Nickname := InputBox ('Nickname Identity', 'Enter nickname to search', '');
-  For counter := 2 to i do begin
-   showmessage (ListOfUsers[counter]);
-  end;
-  If (Search(Nickname, i) = True) then begin
-   showmessage ('successfull');
-   ADOQuery1.Close;
-   ADOQuery1.SQL.Clear;
-   ADOQuery1.SQL.Add('select *from LoginEvent where Nickname=' +QuotedStr(Nickname));
-   ADOQuery1.Open;
-  end;
-
-
 // Collect all nicknames from logevent table. In multivariable array
 //place the IP parallel to the nickname.
-//(MergeSort and Binary search) 
 //and display this information. (validate)
 end;
 

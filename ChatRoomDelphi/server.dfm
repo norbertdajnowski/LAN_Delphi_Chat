@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 757
-  Top = 174
+  Left = 1348
+  Top = 568
   Width = 460
   Height = 382
   Caption = 'Chat Group Server'
@@ -11,6 +11,7 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnClick = OnClicked
   OnCreate = FormCreate
   OnShow = FrmVisTrue
   PixelsPerInch = 96
@@ -54,7 +55,7 @@ object Form1: TForm1
     Top = 80
     Width = 289
     Height = 41
-    Caption = 'start/stop server'
+    Caption = 'start/stop chat'
     TabOrder = 1
     OnClick = Button2Click
   end
@@ -129,20 +130,22 @@ object Form1: TForm1
     TabOrder = 7
     OnClick = Button6Click
   end
+  object ADOQuery1: TADOQuery
+    ConnectionString = 
+      'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\norbertoli' +
+      'ni\Desktop\A level proj sockets\ChatRoomDelphi\LoginData.mdb;Per' +
+      'sist Security Info=False'
+    Parameters = <>
+    Left = 56
+    Top = 24
+  end
   object ServerSocket1: TServerSocket
     Active = False
     Port = 0
     ServerType = stNonBlocking
-    Left = 24
-    Top = 24
-  end
-  object ADOQuery1: TADOQuery
-    ConnectionString = 
-      'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\Norbert\De' +
-      'sktop\A level proj sockets\ChatRoomDelphi\LoginData.mdb;Persist ' +
-      'Security Info=False'
-    Parameters = <>
-    Left = 56
+    OnClientConnect = ConnectionServer
+    OnClientRead = readSRV
+    Left = 16
     Top = 24
   end
 end
